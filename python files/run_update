@@ -1,0 +1,99 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+	#created by wolfden
+	#for learning purposes only, my first py file ever, zomg
+	
+	#goal: to accomplish a py file that can run a system upgrade
+	#with very little human interaction
+	
+from datetime import datetime
+import subprocess
+
+# Add some pretty colors	
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'	
+
+# Start Timer
+startTime = datetime.now()
+# Date and Time of Start
+date_start = subprocess.Popen('date', shell=True)
+retval = date_start.wait()
+
+# Lets See What Repos We Are Using	
+print bcolors.BOLD + "====Current Activated Repositories====" + bcolors.ENDC
+equo_repo = subprocess.Popen('equo repo list', shell=True)
+retval = equo_repo.wait()
+
+# First we need to update or make sure our Repositories are Current
+print bcolors.BOLD + "====Updating the Repositories====" + bcolors.ENDC
+equo_update = subprocess.Popen('equo update', shell=True)
+retval = equo_update.wait()
+
+# Next we need to make sure latest entropy is installed
+print bcolors.BOLD + "====Installing Latest Entropy====" + bcolors.ENDC
+equo_entropy = subprocess.Popen('equo install app-admin/equo sys-apps/entropy --nodeps', shell=True)
+retval = equo_entropy.wait()
+
+# Next we list number of upgrades available
+print bcolors.BOLD + "====Getting A Count of How Many Packages Need Upgrade or Removed====" + bcolors.ENDC
+equo_upgrades_available = subprocess.Popen('equo q updates', shell=True)
+retval = equo_upgrades_available.wait()
+
+# Next we start the upgrade process
+print bcolors.BOLD + "====Starting to Perform Upgrade====" + bcolors.ENDC
+equo_upgrade = subprocess.Popen('equo upgrade', shell=True)
+retval = equo_upgrade.wait()
+
+# Next we check for missing dependencies
+print bcolors.BOLD + "====Looking for Missing Dependencies====" + bcolors.ENDC
+equo_dep = subprocess.Popen('equo deptest', shell=True)
+retval = equo_dep.wait()
+
+# Next we clean up
+print bcolors.BOLD + "====Running equo cleanup====" + bcolors.ENDC
+equo_clean = subprocess.Popen('equo cleanup', shell=True)
+retval = equo_clean.wait()
+
+print " \n"
+print "========================System Information========================" 
+
+
+# Gather Useful Information and Display it in Terminal
+kernel_arch = subprocess.Popen('uname -m', shell=True)
+kernel_arch = kernel_arch.wait()
+release_version = subprocess.Popen('cat /etc/sabayon-release', shell=True)
+release_version = release_version.wait()
+release_edition = subprocess.Popen('cat /etc/sabayon-edition', shell=True)
+release_edition = release_edition.wait()
+cpu = subprocess.Popen('uname -p', shell=True)
+cpu = cpu.wait()
+kernel_version = subprocess.Popen('uname -r', shell=True)
+kernel_version = kernel_version.wait()
+print " \n"
+mem_free = subprocess.Popen('free -h', shell=True)
+mem_free = mem_free.wait()
+print " \n"
+disk_space = subprocess.Popen('df -lT --exclude-type=tmpfs --exclude-type=rootfs', shell=True)
+disk_space = disk_space.wait()
+
+print " \n"
+print bcolors.BOLD + "This Session Has Ended Successfully" + bcolors.ENDC
+
+# Date and Time of End
+date_end = subprocess.Popen('date', shell=True)
+retval = date_end.wait()
+# End Timer
+ctime = datetime.now() - startTime
+print "Time to Complete ", ctime
+
+
+print " \n"
+
